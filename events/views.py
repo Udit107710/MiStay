@@ -16,17 +16,19 @@ class EventViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             print(serializer.validated_data)
             serializer.save()
-            return HttpResponse(json.dumps({"status": "Saved!"}), status=status.HTTP_201_CREATED,
+            return HttpResponse(json.dumps({"status": "Saved!", "errors": ""}),
+                                status=status.HTTP_201_CREATED,
                                 content_type="application/json")
         else:
             return HttpResponse(json.dumps({"status": "Invalid JSON", "errors": serializer.errors}),
-                                status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+                                status=status.HTTP_400_BAD_REQUEST,
+                                content_type="application/json")
 
     def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
         event = get_object_or_404(Event, pk=pk)
         event.delete()
-        return HttpResponse(json.dumps({"status": "Event with id " + str(pk) + " deleted"}),
+        return HttpResponse(json.dumps({"status": "Event with id " + str(pk) + " deleted", "errors": ""}),
                             status=status.HTTP_200_OK,
                             content_type="application/json")
 
@@ -43,7 +45,9 @@ class EventViewSet(viewsets.ModelViewSet):
         events = public_events.union(private_events)
         serializer = EventShowSerializer(events, many=True)
 
-        return HttpResponse(json.dumps(serializer.data), status=status.HTTP_302_FOUND, content_type="application/json")
+        return HttpResponse(json.dumps({"data": serializer.data, "errors": ""}),
+                            status=status.HTTP_302_FOUND,
+                            content_type="application/json")
 
 
 class Register(APIView):
@@ -56,7 +60,8 @@ class Register(APIView):
         user = get_object_or_404(User, username=username)
 
         if event.type == 'Private' and user not in event.invited.all():
-            return HttpResponse(json.dumps({"status": "You are not invited for this particular private event!"}),
+            return HttpResponse(json.dumps({"status": "You are not invited for this particular private event!",
+                                            "errors": "Unauthorized access"}),
                                 status=status.HTTP_401_UNAUTHORIZED,
                                 content_type="application/json")
 
@@ -75,15 +80,15 @@ class Register(APIView):
                 event.attendees.add(user)
                 event.no_of_attendees += 1
                 event.save()
-                return HttpResponse(json.dumps({"status": "user added in the event successfully"}),
+                return HttpResponse(json.dumps({"status": "user added in the event successfully", "errors": ""}),
                                     status=status.HTTP_200_OK,
                                     content_type="application/json")
             else:
-                return HttpResponse(json.dumps({"status": "event full!"}),
+                return HttpResponse(json.dumps({"status": "Event full!", "errors": ""}),
                                     status=status.HTTP_200_OK,
                                     content_type="application/json")
         else:
-            return HttpResponse(json.dumps({"status": "Conflict in event occurred"}),
+            return HttpResponse(json.dumps({"status": "Conflict in event occurred", "errors": ""}),
                                 status=status.HTTP_304_NOT_MODIFIED,
                                 content_type="application//json")
 
@@ -96,7 +101,7 @@ class Unregister(APIView):
         event.attendees.remove(user)
         event.no_of_attendees -= 1
         event.save()
-        return HttpResponse(json.dumps({"status": "user removed from the event successfully"}),
+        return HttpResponse(json.dumps({"status": "User removed from the event successfully", "errors": ""}),
                             status=status.HTTP_200_OK,
                             content_type="application/json")
 
