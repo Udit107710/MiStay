@@ -3,6 +3,13 @@ from .models import Event
 
 
 class EventSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Event
-        fields = "__all__"
+        exclude = ['id', "attendees", "no_of_attendees"]
+
+
+class EventShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        exclude = ['id', 'attendees', 'no_of_attendees', 'invited']
