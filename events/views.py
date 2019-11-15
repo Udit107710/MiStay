@@ -1,12 +1,10 @@
-from django.shortcuts import render, HttpResponse, get_object_or_404
-from rest_framework.views import APIView, View
+from django.shortcuts import HttpResponse, get_object_or_404
+from rest_framework.views import APIView
 from .serializers import EventSerializer, EventShowSerializer
 from rest_framework import status, viewsets
 import json
 from .models import Event
 from django.contrib.auth.models import User
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
-from django.db.models import F
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -56,6 +54,11 @@ class Register(APIView):
 
         event = get_object_or_404(Event, pk=event_id)
         user = get_object_or_404(User, username=username)
+
+        if event.type == 'Private' and user not in event.invited.all():
+            return HttpResponse(json.dumps({"status": "You are not invited for this particular private event!"}),
+                                status=status.HTTP_401_UNAUTHORIZED,
+                                content_type="application/json")
 
         public_events = Event.objects.filter(type='Public', attendees__in=[user.pk])
         private_events = Event.objects.filter(type='Private', attendees__in=[user.pk])
