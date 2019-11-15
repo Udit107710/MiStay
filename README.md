@@ -1,4 +1,4 @@
-# **Django Application**
+# **Events Application**
 ### How to install
     1. Install Python 3.x
     2. Create a virtual env
@@ -18,7 +18,7 @@
 
 ### Endpoints
     1. localhost:8000/admin/
-        1.1 This endpoint will help in accessing admin portal of the django application. <br>
+        1.1 This endpoint will help in accessing admin portal of the django application.
             You need to create a superuser by the command, python manage.py createsuperuser to login into the admin portal.
     2. localhost:8000/events/
         2.1. localhost:8000/events/add/
