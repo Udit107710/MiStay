@@ -104,5 +104,3 @@ class Unregister(APIView):
         return HttpResponse(json.dumps({"status": "User removed from the event successfully", "errors": ""}),
                             status=status.HTTP_200_OK,
                             content_type="application/json")
-
-
