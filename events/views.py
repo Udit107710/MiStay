@@ -25,8 +25,9 @@ class EventViewSet(viewsets.ModelViewSet):
                                 content_type="application/json")
 
     def destroy(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        event = get_object_or_404(Event, pk=pk)
+        pk = kwargs['event_id']
+        user_id = kwargs['user_id']
+        event = get_object_or_404(Event, pk=pk, owner=user_id)
         event.delete()
         return HttpResponse(json.dumps({"status": "Event with id " + str(pk) + " deleted", "errors": ""}),
                             status=status.HTTP_200_OK,
@@ -94,13 +95,18 @@ class Register(APIView):
 
 
 class Unregister(APIView):
-    def get(self, username, event_id):
+    def get(self, request, username, event_id):
         user = get_object_or_404(User, username=username)
         event = get_object_or_404(Event, pk=event_id)
 
-        event.attendees.remove(user)
-        event.no_of_attendees -= 1
-        event.save()
-        return HttpResponse(json.dumps({"status": "User removed from the event successfully", "errors": ""}),
-                            status=status.HTTP_200_OK,
-                            content_type="application/json")
+        if user in event.attendees.all():
+            event.attendees.remove(user)
+            event.no_of_attendees -= 1
+            event.save()
+            return HttpResponse(json.dumps({"status": "User removed from the event successfully", "errors": ""}),
+                                status=status.HTTP_200_OK,
+                                content_type="application/json")
+        else:
+            return HttpResponse(json.dumps({"status": "User never signed up for the event", "errors": ""}),
+                                status=status.HTTP_200_OK,
+                                content_type="application/json")

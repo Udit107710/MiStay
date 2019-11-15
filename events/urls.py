@@ -7,8 +7,8 @@ event_list = EventViewSet.as_view({'get': 'list'})
 
 urlpatterns = [
     path("add/", event_add, name="add-event"),
-    path("delete/<int:pk>", event_delete, name="delete-event"),
+    path("delete/<int:event_id>/<int:user_id>", event_delete, name="delete-event"),
     path("list/<int:pk>", event_list, name="list-event"),
-    path("register/<str:username>/<int:event_id>", Register.as_view(), name="register-event"),
     path("unregister/<str:username>/<int:event_id>", Unregister.as_view(), name="unregister-event"),
+    path("register/<str:username>/<int:event_id>", Register.as_view(), name="register-event"),
 ]
