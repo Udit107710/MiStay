@@ -3,7 +3,7 @@
     1. Install Python 3.x
     2. Create a virtual env
     3. Execute in the virtual env:
-        3.1. `pip install requirements.tx`
+        3.1. ``pip install requirements.tx``
     4. Install PostgresSQL
     5. Create a postgres user 'udit' with password 'udit'
     6. Create a postgres database 'mistay'
